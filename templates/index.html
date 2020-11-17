@@ -6,6 +6,11 @@
 </head>
 <body>
     <h1>Todo List</h1>
+    <form action='/todo/create' method='post'>
+        
+        <input type='text' name='description'>  
+        <input type='submit' value='Create'>
+    </form>
     <ul>
         {% for d in data %}
         <li>{{d.description}}</li>
