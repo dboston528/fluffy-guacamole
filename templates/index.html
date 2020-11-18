@@ -3,18 +3,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo App 2</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <h1>Todo List</h1>
-    <form action='/todo/create' method='post'>
-        
-        <input type='text' name='description'>  
+    <form id='form'>
+        <input type='text' id='description' name='description'>  
         <input type='submit' value='Create'>
     </form>
-    <ul>
+    <div id="error" class="hidden">Something went wrong!</div>
+    <ul id='todos'>
         {% for d in data %}
         <li>{{d.description}}</li>
         {% endfor %}
     </ul>
+    <script>
+        //manipulating the onsubmit handler
+        document.getElementById('form').onsubmit = function(e) {
+            e.preventDefault();
+            fetch('/todo/create', {
+                method: 'POST',
+                body: JSON.stringify({
+                    'description': document.getElementById('description').value
+                }),
+                //specify content-type header when sending over json
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            //after doing the fetch request we should  get a string response. 
+            //we can can parse the reponse by doing the following
+            .then(function(response){
+                
+                return response.json()
+            })
+            //then we will manipulate the json respnse
+            .then(function(jsonResponse){
+                const liItem = document.createElement('li');
+                liItem.innerHTML = jsonResponse['description'];
+                //get our parent list item and appendChild
+                document.getElementById('todos').appendChild(liItem)
+                document.getElementById('error').className = 'hidden';
+            })
+            .catch(function() {
+                document.getElementById('error').className = '';
+            })
+        }
+     </script>
 </body>
 </html>
